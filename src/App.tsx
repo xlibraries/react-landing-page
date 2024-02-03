@@ -9,7 +9,7 @@ export default function App() {
         <Routes>
             <Route path="/" element={<OnboardingPage />} />
             <Route path="/auth/:mode" element={<AuthPage />} />
-            <Route path="/home" element={<HomePage />} />
+            <Route path="/home" element={<HomePage tasks={[]} />} />
         </Routes>
     );
 }
