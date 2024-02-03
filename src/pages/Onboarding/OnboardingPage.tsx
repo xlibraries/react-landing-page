@@ -1,5 +1,8 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { Button, Typography, Box } from '@material-ui/core';
+import ArrowForwardIcon from '@material-ui/icons/ArrowForward';
+import ArrowBackIcon from '@material-ui/icons/ArrowBack';
 import './OnboardingPage.css';
 
 function OnboardingPage() {
@@ -20,26 +23,26 @@ function OnboardingPage() {
         setCurrentSlide((prevSlide) => (prevSlide - 1 + slides.length) % slides.length);
     };
 
-    const skipOnboarding = () => {
+    const login = () => {
         navigate('/login');
     };
 
     return (
-        <div className="onboarding">
-            <header className="onboarding-header">
-                <h1>Onboarding Page</h1>
-                <div className="header-aside">
-                    <button className='login-button' onClick={() => navigate('/login')}>Login</button>
-                    <button className='signup-button' onClick={() => navigate('/signup')}>Create and account</button>
-                </div>
-            </header>
-            <div className='feature'>
-                <button className="arrow-button" onClick={prevSlide}>{'<'}</button>
-                <p>{slides[currentSlide]}</p>
-                <button className="arrow-button" onClick={nextSlide}>{'>'}</button>
-            </div>
-            <button className="skip-button" onClick={skipOnboarding}>Skip</button>
-        </div>
+        <Box className="onboarding">
+            <Box className="onboarding-header">
+                <Typography variant="h4">Onboarding Page</Typography>
+                <Box className="header-aside">
+                    <Button variant="contained" color="primary" onClick={login}>Login</Button>
+                    <Button variant="contained" color="secondary" onClick={() => navigate('/signup')}>Create an account</Button>
+                </Box>
+            </Box>
+            <Box className='feature'>
+                <Button className="arrow-button" onClick={prevSlide}><ArrowBackIcon /></Button>
+                <Typography variant="body1">{slides[currentSlide]}</Typography>
+                <Button className="arrow-button" onClick={nextSlide}><ArrowForwardIcon /></Button>
+            </Box>
+            <Button variant="outlined" color="primary" onClick={login}>Skip</Button>
+        </Box>
     );
 }
 

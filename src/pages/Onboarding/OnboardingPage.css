@@ -44,7 +44,7 @@
     cursor: pointer;
 }
 
-.skip-button, .login-button, .signup-button {
+/*.skip-button, .login-button, .signup-button {
     display: block;
     height: 40px;
     margin: 20px auto;
@@ -54,16 +54,16 @@
     font-weight: bold;
     font-size: 18px;
     padding: 10px 20px;
-}
+}*/
 
 .skip-button, .signup-button {
-    width: auto;
+    /*width: auto;*/
     background-color: dodgerblue;
     color: floralwhite;
 }
 
 .login-button {
-    width: 100px;
+    /*width: 100px;*/
     background-color: floralwhite;
     color: dodgerblue;
 }

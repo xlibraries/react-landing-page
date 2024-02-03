@@ -10,7 +10,6 @@ export default function App() {
         <Routes>
             <Route path="/" element={<OnboardingPage />} />
             <Route path="/login" element={<AuthPage />} />
-            {/*<Route path="/signup" element={<SignUpPage />} />*/}
             <Route path="/home" element={<HomePage />} />
         </Routes>
     );
