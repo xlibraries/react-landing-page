@@ -1,6 +1,6 @@
 // HomePage.tsx
 import React, { useState } from 'react';
-import { Button, Dialog, DialogActions, DialogContent, DialogTitle, TextField, Grid } from '@material-ui/core';
+import { Button, Dialog, DialogActions, DialogContent, DialogTitle, TextField, Grid, InputLabel, MenuItem, Select } from '@material-ui/core';
 import 'chart.js/auto';
 import { Pie } from 'react-chartjs-2';
 import TaskCard from './TaskCard';
@@ -13,12 +13,12 @@ interface HomePageProps {
 
 const HomePage: React.FC<HomePageProps> = ({ tasks: initialTasks }) => {
     const [open, setOpen] = useState(false);
-    const [newTask, setNewTask] = useState<Task>({ id: '', title: '', description: '', dueDate: new Date(), status: '', priority: 0 });
-    const { handleOpen, handleClose, handleInputChange, handleAddTask, tasks } = TaskController({ setOpen, setNewTask, newTask, initialTasks });
+    const [newTask, setNewTask] = useState<Task>({ id: '', title: '', description: '', dueDate: new Date(), status: '', priority: 0, creationDate: new Date() });
+    const { handleOpen, handleClose, handleInputChange, handleAddTask, handleSortChange, sortedTasks, sortOption } = TaskController({ setOpen, setNewTask, newTask, initialTasks });
 
-    const completedTasks = tasks.filter(task => task.status === 'completed').length;
-    const pendingTasks = tasks.filter(task => task.status === 'pending').length;
-    const dueTasks = tasks.filter(task => new Date(task.dueDate) < new Date()).length;
+    const completedTasks = sortedTasks.filter(task => task.status === 'completed').length;
+    const pendingTasks = sortedTasks.filter(task => task.status === 'pending').length;
+    const dueTasks = sortedTasks.filter(task => new Date(task.dueDate) < new Date()).length;
 
     const pieData = {
         labels: ['Completed Tasks', 'Pending Tasks', 'Due Tasks'],
@@ -37,6 +37,14 @@ const HomePage: React.FC<HomePageProps> = ({ tasks: initialTasks }) => {
                 <Button variant="contained" color="primary" onClick={handleOpen}>
                     Add New Task
                 </Button>
+                <InputLabel id="sort-label">Sort by</InputLabel>
+                <Select labelId="sort-label" id="sort-select" value={sortOption} onChange={handleSortChange}>
+                    <MenuItem value={'dueTasks'}>Due Tasks</MenuItem>
+                    <MenuItem value={'todaysTasks'}>Today's Tasks</MenuItem>
+                    <MenuItem value={'tomorrowsTasks'}>Tomorrow's Tasks</MenuItem>
+                    <MenuItem value={'priority'}>Priority</MenuItem>
+                    <MenuItem value={'creationDate'}>Creation Date</MenuItem>
+                </Select>
                 <Dialog open={open} onClose={handleClose}>
                     <DialogTitle>Add New Task</DialogTitle>
                     <DialogContent>
@@ -52,7 +60,7 @@ const HomePage: React.FC<HomePageProps> = ({ tasks: initialTasks }) => {
                     </DialogActions>
                 </Dialog>
             </Grid>
-            {tasks.map(task => (
+            {sortedTasks.map(task => (
                 <Grid item xs={2}>
                     <TaskCard key={task.id} task={task} />
                 </Grid>

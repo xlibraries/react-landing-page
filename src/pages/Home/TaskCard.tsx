@@ -8,9 +8,9 @@ interface TaskCardProps {
 
 const useStyles = makeStyles({
     root: {
-        maxWidth: '100%', // This will ensure that 5 cards are displayed in full screen.
-        margin: '1em', // Add some margin around the cards
-        borderRadius: '15px', // Rounded corners
+        maxWidth: '100%',
+        margin: '1em',
+        borderRadius: '15px',
     },
 });
 

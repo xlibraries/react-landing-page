@@ -1,5 +1,4 @@
-// TaskController.tsx
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Task } from './TaskModel';
 
 interface TaskControllerProps {
@@ -11,6 +10,28 @@ interface TaskControllerProps {
 
 export const TaskController = ({ setOpen, setNewTask, newTask, initialTasks }: TaskControllerProps) => {
     const [tasks, setTasks] = useState<Task[]>(initialTasks);
+    const [sortOption, setSortOption] = useState('creationDate');
+    const [sortedTasks, setSortedTasks] = useState<Task[]>([]);
+
+    useEffect(() => {
+        const newSortedTasks = [...tasks].sort((a, b) => {
+            switch (sortOption) {
+                case 'dueTasks':
+                    return new Date(a.dueDate).getTime() - new Date(b.dueDate).getTime();
+                case 'todaysTasks':
+                    return new Date(a.dueDate).getDate() - new Date(b.dueDate).getDate();
+                case 'tomorrowsTasks':
+                    return new Date(a.dueDate).getDate() - new Date(b.dueDate).getDate() + 1;
+                case 'priority':
+                    return a.priority - b.priority;
+                case 'creationDate':
+                    return new Date(a.creationDate).getTime() - new Date(b.creationDate).getTime();
+                default:
+                    return 0;
+            }
+        });
+        setSortedTasks(newSortedTasks);
+    }, [tasks, sortOption]);
 
     const handleOpen = () => {
         setOpen(true);
@@ -31,11 +52,17 @@ export const TaskController = ({ setOpen, setNewTask, newTask, initialTasks }: T
             description: newTask.description,
             dueDate: newTask.dueDate,
             status: newTask.status,
-            priority: newTask.priority
+            priority: newTask.priority,
+            creationDate: new Date() // Set the creation date to the current date and time
         };
         setTasks([...tasks, task]); // Add the new task to the tasks array
-        setNewTask({ id: '', title: '', description: '', dueDate: new Date(), status: '', priority: 0 });
+        setNewTask({ id: '', title: '', description: '', dueDate: new Date(), status: '', priority: 0, creationDate: new Date()});
     };
 
-    return { handleOpen, handleClose, handleInputChange, handleAddTask, tasks };
+
+    const handleSortChange = (event: React.ChangeEvent<{ value: unknown }>) => {
+        setSortOption(event.target.value as string);
+    };
+
+    return { handleOpen, handleClose, handleInputChange, handleAddTask, handleSortChange, sortedTasks, sortOption };
 };
