@@ -1,37 +1,41 @@
-// TaskController.ts
-import { Request, Response } from 'express';
-import Task from './TaskModel';
+// TaskController.tsx
+import React, { useState } from 'react';
+import { Task } from './TaskModel';
 
-interface Task {
-    id: string;
-    title: string;
-    description: string;
-    dueDate: Date;
-    status: string;
-    priority: number;
+interface TaskControllerProps {
+    setOpen: (open: boolean) => void;
+    setNewTask: (task: Task) => void;
+    newTask: Task;
+    initialTasks: Task[];
 }
 
-const TaskController = {
-    getTasks: async (req: Request, res: Response) => {
-        const tasks = await Task.find();
-        res.json(tasks);
-    },
+export const TaskController = ({ setOpen, setNewTask, newTask, initialTasks }: TaskControllerProps) => {
+    const [tasks, setTasks] = useState<Task[]>(initialTasks);
 
-    addTask: async (req: Request, res: Response) => {
-        const newTask = new Task(req.body);
-        const savedTask = await newTask.save();
-        res.json(savedTask);
-    },
+    const handleOpen = () => {
+        setOpen(true);
+    };
 
-    updateTask: async (req: Request, res: Response) => {
-        const updatedTask = await Task.findByIdAndUpdate(req.params.id, req.body, { new: true });
-        res.json(updatedTask);
-    },
+    const handleClose = () => {
+        setOpen(false);
+    };
 
-    deleteTask: async (req: Request, res: Response) => {
-        const deletedTask = await Task.findByIdAndDelete(req.params.id);
-        res.json(deletedTask);
-    }
+    const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+        setNewTask({ ...newTask, [e.target.name]: e.target.value });
+    };
+
+    const handleAddTask = () => {
+        const task: Task = {
+            id: Math.random().toString(), // Generate a random id
+            title: newTask.title,
+            description: newTask.description,
+            dueDate: newTask.dueDate,
+            status: newTask.status,
+            priority: newTask.priority
+        };
+        setTasks([...tasks, task]); // Add the new task to the tasks array
+        setNewTask({ id: '', title: '', description: '', dueDate: new Date(), status: '', priority: 0 });
+    };
+
+    return { handleOpen, handleClose, handleInputChange, handleAddTask, tasks };
 };
-
-export default TaskController;

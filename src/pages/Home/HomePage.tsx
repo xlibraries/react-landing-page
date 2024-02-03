@@ -1,26 +1,21 @@
+// HomePage.tsx
 import React, { useState } from 'react';
 import { Button, Dialog, DialogActions, DialogContent, DialogTitle, TextField, Grid } from '@material-ui/core';
 import 'chart.js/auto';
 import { Pie } from 'react-chartjs-2';
 import TaskCard from './TaskCard';
-import TodoList from './TodoList';
-import TaskController from './TaskController';
-
-interface Task {
-    id: string;
-    title: string;
-    description: string;
-    dueDate: Date;
-    status: string;
-    priority: number;
-}
+import { TaskController } from './TaskController';
+import { Task } from './TaskModel';
 
 interface HomePageProps {
     tasks: Task[];
 }
 
-const HomePage: React.FC<HomePageProps> = ({ tasks }) => {
-    // Calculate the data for the pie chart
+const HomePage: React.FC<HomePageProps> = ({ tasks: initialTasks }) => {
+    const [open, setOpen] = useState(false);
+    const [newTask, setNewTask] = useState<Task>({ id: '', title: '', description: '', dueDate: new Date(), status: '', priority: 0 });
+    const { handleOpen, handleClose, handleInputChange, handleAddTask, tasks } = TaskController({ setOpen, setNewTask, newTask, initialTasks });
+
     const completedTasks = tasks.filter(task => task.status === 'completed').length;
     const pendingTasks = tasks.filter(task => task.status === 'pending').length;
     const dueTasks = tasks.filter(task => new Date(task.dueDate) < new Date()).length;
@@ -36,45 +31,8 @@ const HomePage: React.FC<HomePageProps> = ({ tasks }) => {
         ]
     };
 
-    const [open, setOpen] = useState(false);
-    const [newTask, setNewTask] = useState<Task>({ id: '', title: '', description: '', dueDate: new Date(), status: '', priority: 0 });
-
-    const handleOpen = () => {
-        setOpen(true);
-    };
-
-    const handleClose = () => {
-        setOpen(false);
-    };
-
-    const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-        setNewTask({ ...newTask, [e.target.name]: e.target.value });
-    };
-
-    const handleAddTask = () =>
-    {
-        const task: Task = {
-            id: Math.random().toString(), // Generate a random id
-            title: newTask.title,
-            description: newTask.description,
-            dueDate: newTask.dueDate,
-            status: newTask.status,
-            priority: newTask.priority
-        };
-        setNewTask({ id: '', title: '', description: '', dueDate: new Date(), status: '', priority: 0 });
-    };
-
     return (
-        <Grid container spacing={3}>
-            <Grid item xs={6}>
-                <TaskCard title="Completed Tasks" count={completedTasks} />
-            </Grid>
-            <Grid item xs={6}>
-                <TaskCard title="Pending Tasks" count={pendingTasks} />
-            </Grid>
-            <Grid item xs={12}>
-                <TodoList tasks={tasks} />
-            </Grid>
+        <Grid container spacing={3} direction="row" wrap="wrap">
             <Grid item xs={12}>
                 <Button variant="contained" color="primary" onClick={handleOpen}>
                     Add New Task
@@ -84,7 +42,6 @@ const HomePage: React.FC<HomePageProps> = ({ tasks }) => {
                     <DialogContent>
                         <TextField name="title" label="Title" value={newTask.title} onChange={handleInputChange} />
                         <TextField name="description" label="Description" value={newTask.description} onChange={handleInputChange} />
-                        {/* Add fields for due date, status, and priority here */}
                         <TextField name="dueDate" label="Due Date" value={newTask.dueDate} onChange={handleInputChange} />
                         <TextField name="status" label="Status" value={newTask.status} onChange={handleInputChange} />
                         <TextField name="priority" label="Priority" value={newTask.priority} onChange={handleInputChange} />
@@ -95,6 +52,11 @@ const HomePage: React.FC<HomePageProps> = ({ tasks }) => {
                     </DialogActions>
                 </Dialog>
             </Grid>
+            {tasks.map(task => (
+                <Grid item xs={2}>
+                    <TaskCard key={task.id} task={task} />
+                </Grid>
+            ))}
             <Grid item xs={12}>
                 <div style={{ maxWidth: '600px', maxHeight: '600px' }}>
                     <Pie data={pieData} />
