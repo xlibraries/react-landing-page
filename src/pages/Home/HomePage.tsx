@@ -15,7 +15,7 @@ interface HomePageProps {
 const HomePage: React.FC<HomePageProps> = ({ tasks: initialTasks }) => {
     const [open, setOpen] = useState(false);
     const [newTask, setNewTask] = useState<Task>({ id: '', title: '', description: '', dueDate: new Date(), status: '', priority: 0, creationDate: new Date() });
-    const { handleOpen, handleClose, handleInputChange, handleAddTask, handleSortChange, sortedTasks, sortOption } = TaskController({ setOpen, setNewTask, newTask, initialTasks });
+    const { handleOpen, handleClose, handleInputChange, handleAddTask, handleSortChange, handleEditTask, handleDeleteTask, handleMarkAsComplete, sortedTasks, sortOption } = TaskController({ setOpen, setNewTask, newTask, initialTasks });
 
     const completedTasks = sortedTasks.filter(task => task.status === 'completed').length;
     const pendingTasks = sortedTasks.filter(task => task.status === 'pending').length;
@@ -50,13 +50,23 @@ const HomePage: React.FC<HomePageProps> = ({ tasks: initialTasks }) => {
                 </Box>
                 <Dialog open={open} onClose={handleClose}>
                     <DialogTitle>Add New Task</DialogTitle>
-                    <DialogContent>
-                        <TextField name="title" label="Title" value={newTask.title} onChange={handleInputChange} />
-                        <TextField name="description" label="Description" value={newTask.description} onChange={handleInputChange} />
-                        <TextField name="dueDate" label="Due Date" value={newTask.dueDate} onChange={handleInputChange} />
-                        <TextField name="status" label="Status" value={newTask.status} onChange={handleInputChange} />
-                        <TextField name="priority" label="Priority" value={newTask.priority} onChange={handleInputChange} />
-                    </DialogContent>
+                        <DialogContent>
+                            <TextField name="title" label="Title *" value={newTask.title} onChange={handleInputChange} fullWidth />
+                            <TextField name="description" label="Description" value={newTask.description} onChange={handleInputChange} fullWidth multiline />
+                            <TextField name="dueDate" label="Due Date *" value={newTask.dueDate} onChange={handleInputChange} type="date" InputLabelProps={{ shrink: true }} />
+                            <InputLabel id="priority-label">Priority *</InputLabel>
+                            <Select name="priority" label="Priority" value={newTask.priority} onChange={handleInputChange} fullWidth>
+                                <MenuItem value={"1"}>1</MenuItem>
+                                <MenuItem value={"2"}>2</MenuItem>
+                                <MenuItem value={"3"}>3</MenuItem>
+                            </Select>
+                            <InputLabel id="status-label">Status *</InputLabel>
+                            <Select name="status" value={newTask.status} onChange={handleInputChange} fullWidth>
+                                <MenuItem value="due">Due</MenuItem>
+                                <MenuItem value="complete">Complete</MenuItem>
+                                <MenuItem value="pending">Pending</MenuItem>
+                            </Select>
+                        </DialogContent>
                     <DialogActions>
                         <Button onClick={handleClose}>Cancel</Button>
                         <Button onClick={handleAddTask}>Add</Button>
@@ -64,11 +74,15 @@ const HomePage: React.FC<HomePageProps> = ({ tasks: initialTasks }) => {
                 </Dialog>
             </Grid>
             <Grid item xs={12} className="main-content">
-                {sortedTasks.map(task => (
-                    <Grid item xs={2}>
-                        <TaskCard key={task.id} task={task} />
-                    </Grid>
-                ))}
+            {sortedTasks.map(task => (
+                <TaskCard
+                    key={task.id}
+                    task={task}
+                    handleEditTask={handleEditTask}
+                    handleDeleteTask={handleDeleteTask}
+                    handleMarkAsComplete={handleMarkAsComplete}
+                />
+            ))}
             </Grid>
             <Grid item xs={12} className="charts">
                 <div style={{ maxWidth: '600px', maxHeight: '600px' }}>
