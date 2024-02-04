@@ -1,35 +1,66 @@
 import UserModel from './UserModel';
 
 const AuthController = {
-    handleLogin: (userModel: typeof UserModel, navigate: (path: string) => void) => {
+    handleLogin: async (userModel: typeof UserModel, navigate: (path: string) => void) => {
         if (!userModel.validateEmail(userModel.email) || !userModel.validatePassword(userModel.password)) {
             alert('Invalid email or password.');
             return;
         }
 
-        // Replace this with your own logic for handling login
-        console.log(`Logging in with email: ${userModel.email} and password: ${userModel.password}`);
-        navigate('/home');
+        // Make an API call to login the user
+        const response = await fetch('/api/user/login', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({
+                email: userModel.email,
+                password: userModel.password
+            })
+        });
+
+        if (response.ok) {
+            console.log(`Logged in with email: ${userModel.email}`);
+            navigate('/home');
+        } else {
+            console.error('Error logging in:', response.statusText);
+        }
     },
 
-    handleSignUp: (userModel: typeof UserModel, navigate: (path: string) => void) => {
+    handleSignUp: async (userModel: typeof UserModel, navigate: (path: string) => void) => {
         if (!userModel.validateEmail(userModel.email) || !userModel.validatePassword(userModel.password) || userModel.password !== userModel.confirmPassword) {
             alert('Invalid email, password, or passwords do not match.');
             return;
         }
 
-        // Replace this with your own logic for handling sign up
-        console.log(`Signing up with username: ${userModel.username}, email: ${userModel.email}, and password: ${userModel.password}`);
-        navigate('/home');
+        // Make an API call to register the user
+        const response = await fetch('/api/user/register', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({
+                email: userModel.email,
+                password: userModel.password,
+                username: userModel.username
+            })
+        });
+
+        if (response.ok) {
+            console.log(`Signed up with username: ${userModel.username}, email: ${userModel.email}`);
+            navigate('/home');
+        } else {
+            console.error('Error signing up:', response.statusText);
+        }
     },
 
-     handleAuth: (userModel: typeof UserModel, navigate: (path: string) => void) => {
+    handleAuth: (userModel: typeof UserModel, navigate: (path: string) => void) => {
         if (userModel.isLogin) {
             AuthController.handleLogin(userModel, navigate);
         } else {
             AuthController.handleSignUp(userModel, navigate);
         }
     }
-    // Add other methods related to user interactions here
 };
+
 export default AuthController;
