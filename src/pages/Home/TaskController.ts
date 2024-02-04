@@ -1,5 +1,7 @@
+// TaskController.tsx
 import React, { useState, useEffect } from 'react';
 import { Task } from './TaskModel';
+import { SelectChangeEvent } from '@material-ui/core';
 
 interface TaskControllerProps {
     setOpen: (open: boolean) => void;
@@ -60,9 +62,10 @@ export const TaskController = ({ setOpen, setNewTask, newTask, initialTasks }: T
     };
 
 
-    const handleSortChange = (event: React.ChangeEvent<{ value: unknown }>) => {
+    const handleSortChange = (event: SelectChangeEvent<string>) => {
         setSortOption(event.target.value as string);
     };
+
 
     return { handleOpen, handleClose, handleInputChange, handleAddTask, handleSortChange, sortedTasks, sortOption };
 };

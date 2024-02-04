@@ -1,11 +1,12 @@
 // HomePage.tsx
 import React, { useState } from 'react';
-import { Button, Dialog, DialogActions, DialogContent, DialogTitle, TextField, Grid, InputLabel, MenuItem, Select } from '@material-ui/core';
+import { Button, Dialog, DialogActions, DialogContent, DialogTitle, TextField, Grid, InputLabel, MenuItem, Select, Box } from '@material-ui/core';
 import 'chart.js/auto';
 import { Pie } from 'react-chartjs-2';
 import TaskCard from './TaskCard';
 import { TaskController } from './TaskController';
 import { Task } from './TaskModel';
+import './HomePage.css';
 
 interface HomePageProps {
     tasks: Task[];
@@ -33,18 +34,20 @@ const HomePage: React.FC<HomePageProps> = ({ tasks: initialTasks }) => {
 
     return (
         <Grid container spacing={3} direction="row" wrap="wrap">
-            <Grid item xs={12}>
+            <Grid item xs={12} className="header">
                 <Button variant="contained" color="primary" onClick={handleOpen}>
                     Add New Task
                 </Button>
-                <InputLabel id="sort-label">Sort by</InputLabel>
-                <Select labelId="sort-label" id="sort-select" value={sortOption} onChange={handleSortChange}>
-                    <MenuItem value={'dueTasks'}>Due Tasks</MenuItem>
-                    <MenuItem value={'todaysTasks'}>Today's Tasks</MenuItem>
-                    <MenuItem value={'tomorrowsTasks'}>Tomorrow's Tasks</MenuItem>
-                    <MenuItem value={'priority'}>Priority</MenuItem>
-                    <MenuItem value={'creationDate'}>Creation Date</MenuItem>
-                </Select>
+                <Box>
+                    <InputLabel id="sort-label">Sort by</InputLabel>
+                    <Select labelId="sort-label" id="sort-select" value={sortOption} onChange={handleSortChange}>
+                        <MenuItem value={'dueTasks'}>Due Tasks</MenuItem>
+                        <MenuItem value={'todaysTasks'}>Today's Tasks</MenuItem>
+                        <MenuItem value={'tomorrowsTasks'}>Tomorrow's Tasks</MenuItem>
+                        <MenuItem value={'priority'}>Priority</MenuItem>
+                        <MenuItem value={'creationDate'}>Creation Date</MenuItem>
+                    </Select>
+                </Box>
                 <Dialog open={open} onClose={handleClose}>
                     <DialogTitle>Add New Task</DialogTitle>
                     <DialogContent>
@@ -60,12 +63,14 @@ const HomePage: React.FC<HomePageProps> = ({ tasks: initialTasks }) => {
                     </DialogActions>
                 </Dialog>
             </Grid>
-            {sortedTasks.map(task => (
-                <Grid item xs={2}>
-                    <TaskCard key={task.id} task={task} />
-                </Grid>
-            ))}
-            <Grid item xs={12}>
+            <Grid item xs={12} className="main-content">
+                {sortedTasks.map(task => (
+                    <Grid item xs={2}>
+                        <TaskCard key={task.id} task={task} />
+                    </Grid>
+                ))}
+            </Grid>
+            <Grid item xs={12} className="charts">
                 <div style={{ maxWidth: '600px', maxHeight: '600px' }}>
                     <Pie data={pieData} />
                 </div>
