@@ -35,4 +35,49 @@ router.get('/', async (req, res) => {
     }
 });
 
+// Edit a task
+router.put('/edit/:id', async (req, res) => {
+    try {
+        const task = await Task.findOne({ id: req.params.id });
+        if (!task) {
+            return res.status(404).json({ message: "Task not found" });
+        }
+        const updatedTask = await Task.findOneAndUpdate(task._id, req.body, { new: true });
+        res.status(200).json(updatedTask);
+    } catch (err) {
+        console.error(err);
+        res.status(500).json({ message: "Internal server error" });
+    }
+});
+
+// Delete a task
+// Delete a task
+router.delete('/delete/:id', async (req, res) => {
+    try {
+        const task = await Task.findOne({ id: req.params.id });
+        if (!task) {
+            return res.status(404).json({ message: "Task not found" });
+        }
+        await Task.findOneAndDelete({ _id: task._id });
+        res.status(200).json({ message: "Task deleted successfully" });
+    } catch (err) {
+        console.error(err);
+        res.status(500).json({ message: "Internal server error" });
+    }
+});
+
+
+// Mark a task as complete
+router.put('/complete/:id', async (req, res) => {
+    try {
+        const task = await Task.findByIdAndUpdate(req.params.id);
+        task.status = 'completed';
+        const completedTask = await task.save();
+        res.status(200).json(completedTask);
+    } catch (err) {
+        console.error(err);
+        res.status(500).json({ message: "Internal server error" });
+    }
+});
+
 module.exports = router;

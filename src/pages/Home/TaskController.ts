@@ -101,5 +101,56 @@ export const TaskController = ({ setOpen, setNewTask, newTask, initialTasks }: T
     };
     
 
-    return { handleOpen, handleClose, handleInputChange, handleAddTask, handleSortChange, sortedTasks, sortOption };
+    const handleEditTask = async (id: string, updatedTask: Task) => {
+        try {
+            const response = await fetch(`/api/task/edit/${id}`, {
+                method: 'PUT',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(updatedTask)
+            });
+
+            if (response.ok) {
+                const editedTask = await response.json();
+                setTasks(tasks.map(task => task.id === id ? editedTask : task));
+            }
+        } catch (error) {
+            console.error('Error editing task:', error);
+        }
+    };
+
+    const handleDeleteTask = async (id: string) => {
+        try {
+            const response = await fetch(`/api/task/delete/${id}`, {
+                method: 'DELETE'
+            });
+
+            if (response.ok) {
+                setTasks(tasks.filter(task => task.id !== id));
+            }
+        } catch (error) {
+            console.error('Error deleting task:', error);
+        }
+    };
+
+    const handleMarkAsComplete = async (id: string) => {
+        const completedTask = tasks.find(task => task.id === id);
+        if (completedTask) {
+            completedTask.status = 'completed';
+            await handleEditTask(id, completedTask);
+        }
+    };
+
+    return { handleOpen, handleClose, handleInputChange, handleAddTask, handleSortChange, handleEditTask, handleDeleteTask, handleMarkAsComplete, sortedTasks, sortOption };
 };
+
+export function formatDate(dateString: string | number | Date) {
+    const date = new Date(dateString);
+    const hours = date.getHours().toString().padStart(2, '0');
+    const minutes = date.getMinutes().toString().padStart(2, '0');
+    const day = date.getDate().toString().padStart(2, '0');
+    const month = (date.getMonth() + 1).toString().padStart(2, '0'); // Months are zero-base
+    const year = date.getFullYear();
+    return `${day}/${month}/${year} ${hours}:${minutes}`;
+}
