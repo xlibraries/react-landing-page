@@ -1,9 +1,10 @@
-const Router = require('express');
-const router = Router();
+const express = require('express');
+const router = express.Router();
 const Task = require('../models/TaskModel');
 
 // Create a new task
 router.post('/create', async (req, res) => {
+    console.log('Received request to /create');
     const task = new Task({
         id: req.body.id,
         title: req.body.title,
@@ -16,22 +17,22 @@ router.post('/create', async (req, res) => {
 
     try {
         const savedTask = await task.save();
-        res.send(savedTask);
+        res.status(200).json(savedTask);
     } catch (err) {
-        res.status(400).send(err);
+        console.error(err);
+        res.status(500).json({ message: "Internal server error" });
     }
 });
 
 // Get all tasks
-router.get('/fetch', async (req, res) => {
+router.get('/', async (req, res) => {
     try {
-        const tasks = await find();
-        console.log("tasks");
-        res.send(tasks);
-    } catch (err) {
-        console.log("err");
-        res.status(400).send(err);
+        const tasks = await Task.find();
+        res.status(200).json(tasks);
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ message: "Internal server error" });
     }
 });
 
-export default router;
+module.exports = router;

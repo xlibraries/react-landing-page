@@ -1,16 +1,17 @@
 const express = require('express');
 const bodyParser = require('body-parser');
 const app = express();
+const authRoute = require('./routes/Auth');
+const taskRoute = require('./routes/TaskAPI');
+const port = process.env.PORT || 5000;
+const cors = require('cors');
+require('dotenv').config();
 
-// parse application/x-www-form-urlencoded
 app.use(bodyParser.urlencoded({ extended: false }));
 
 // parse application/json
 app.use(bodyParser.json());
 
-// Your existing code
-const port = process.env.PORT || 5000;
-require('dotenv').config();
 
 app.listen(port, () => {
     console.log(`Server is running on port ${port}`);
@@ -22,10 +23,8 @@ mongoose.connect(process.env.MONGODB_URI, { useNewUrlParser: true, useUnifiedTop
     .then(() => console.log('MongoDB connection established'))
     .catch(err => console.log('MongoDB connection error: ' + err));
 
-const authRoute = require('./routes/Auth');
 
 app.use('/api/user', authRoute);
 
-const taskRoute = require('./routes/TaskAPI');
-
 app.use('/api/task', taskRoute);
+app.use(cors());
