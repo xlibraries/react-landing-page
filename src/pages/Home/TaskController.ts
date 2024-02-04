@@ -34,16 +34,21 @@ export const TaskController = ({ setOpen, setNewTask, newTask, initialTasks }: T
     };
 
     const sortTasks = () => {
+        const today = new Date();
+    
+        const tomorrow = new Date(today);
+        tomorrow.setDate(tomorrow.getDate() + 1); // Set the date to tomorrow
+    
         const newSortedTasks = [...tasks].sort((a, b) => {
             switch (sortOption) {
                 case 'dueTasks':
                     return new Date(a.dueDate).getTime() - new Date(b.dueDate).getTime();
                 case 'todaysTasks':
-                    return new Date(a.dueDate).getDate() - new Date(b.dueDate).getDate();
+                    return (new Date(a.dueDate).getTime() === today.getTime() ? 0 : 1) - (new Date(b.dueDate).getTime() === today.getTime() ? 0 : 1);
                 case 'tomorrowsTasks':
-                    return new Date(a.dueDate).getDate() - new Date(b.dueDate).getDate() + 1;
+                    return (new Date(a.dueDate).getTime() === tomorrow.getTime() ? 0 : 1) - (new Date(b.dueDate).getTime() === tomorrow.getTime() ? 0 : 1);
                 case 'priority':
-                    return a.priority - b.priority;
+                    return b.priority - a.priority;
                 case 'creationDate':
                     return new Date(a.creationDate).getTime() - new Date(b.creationDate).getTime();
                 default:
@@ -52,6 +57,7 @@ export const TaskController = ({ setOpen, setNewTask, newTask, initialTasks }: T
         });
         setSortedTasks(newSortedTasks);
     };
+    
 
     const handleOpen = () => {
         setOpen(true);
@@ -61,11 +67,16 @@ export const TaskController = ({ setOpen, setNewTask, newTask, initialTasks }: T
         setOpen(false);
     };
 
-    const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-        setNewTask({ ...newTask, [e.target.name]: e.target.value });
+    const handleInputChange = (e: React.ChangeEvent<{ name?: string; value: unknown }>) => {
+        setNewTask({ ...newTask, [e.target.name || '']: e.target.value });
     };
-
+    
     const handleAddTask = async () => {
+        if (!newTask.title || !newTask.dueDate || !newTask.status || !newTask.priority) {
+            alert('Please fill all required fields.');
+            return;
+        }
+    
         const task: Task = {
             id: Math.random().toString(), // Generate a random id
             title: newTask.title,
@@ -152,5 +163,5 @@ export function formatDate(dateString: string | number | Date) {
     const day = date.getDate().toString().padStart(2, '0');
     const month = (date.getMonth() + 1).toString().padStart(2, '0'); // Months are zero-base
     const year = date.getFullYear();
-    return `${day}/${month}/${year} ${hours}:${minutes}`;
+    return `${hours}:${minutes} hrs. - ${day}/${month}/${year}`;
 }
