@@ -1,0 +1,37 @@
+name: Deploy to GitHub Pages
+
+on:
+  push:
+    branches:
+      - master  # replace with your default branch name
+
+jobs:
+  build-and-deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout
+      uses: actions/checkout@v2
+
+    - name: Setup Node.js
+      uses: actions/setup-node@v2
+      with:
+        node-version: '20'  # replace with your Node.js version
+
+    - name: Install dependencies for server
+      run: |
+        cd serrver
+        npm ci  # or use 'npm install' if you don't have a lockfile
+        cd ..
+
+    - name: Install dependencies for React app
+      run: npm ci  # or use 'npm install' if you don't have a lockfile
+
+    - name: Build React app
+      run: npm run build
+
+    - name: Deploy to GitHub Pages
+      uses: JamesIves/github-pages-deploy-action@4.1.5
+      with:
+        branch: gh-pages  # GitHub Pages branch
+        folder: build  # Folder to deploy
